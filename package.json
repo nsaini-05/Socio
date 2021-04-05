@@ -1,0 +1,24 @@
+{
+  "name": "socio",
+  "version": "1.0.0",
+  "description": "Social Media Website",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node .backend/server",
+    "prod": "SET NODE_ENV = PRODUCTION& nodemon ./backend/server",
+    "dev": "SET NODE_ENV = DEVELOPMENT& nodemon ./backend/server"
+  },
+  "author": "Neeraj Saini",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.3",
+    "validator": "^13.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}

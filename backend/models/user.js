@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema({
             isAsync : false
         }
     },
+    username:{
+        type : String,
+        required : [true , 'Please enter username'],
+        unique :  [true , 'username already taken'],
+       
+    },
     password : {
         type : String,
         required : [true , "Please enter the password"],

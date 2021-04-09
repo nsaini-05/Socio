@@ -119,8 +119,8 @@ exports.resetPassword = catchAyncErrors(async(req,res,next)=>{
 
 
 //Get user profile
-exports.getUserProfile = catchAyncErrors(async(req,res,next)=>{
-    console.log(req.user._id)
+exports.getMyProfile = catchAyncErrors(async(req,res,next)=>{
+    //console.log(req.user._id)
     const user = await User.findById(req.user._id);
     res.status(200).json({
         success : true,
@@ -130,7 +130,6 @@ exports.getUserProfile = catchAyncErrors(async(req,res,next)=>{
 
 
 //Updating the user passsword
-
 exports.updatePassword = catchAyncErrors(async(req,res,next)=>{
     const user = await User.findById(req.user._id).select('+password');
     const {oldPassword , newPassword} = req.body;
@@ -157,6 +156,103 @@ res.status(200).json({
     success : true
   })
 })
+
+//Get someone profile(limited details name , and photo only)
+exports.getUserProfile = catchAyncErrors(async(req,res,next)=>{
+    
+    const requestedUserDetails = await User.findById(req.params.id ,  );
+    
+    if(!requestedUserDetails){
+        next(new ErrorHandler("Invalid URL" , 404));
+    }
+
+    res.status(200).json({
+        success : true,
+        requestedUserDetails
+    })
+
+})
+
+
+
+
+//Fetch Followers list
+exports.getFollowersList = catchAyncErrors(async(req,res,next)=>{
+    res.status(200).json({
+        success : true,
+        followers : req.user.followers
+    })
+})
+
+
+//Fetch Following list
+exports.getFollowingList = catchAyncErrors(async(req,res,next)=>{
+    res.status(200).json({
+        success : true,
+        following : req.user.following
+    })
+})
+
+
+
+//Get Notifications
+exports.getAllNotifications = catchAyncErrors(async(req,res,next)=>{
+    res.status(200).json({
+        success : true,
+        notifications : req.user.notifications
+    })
+})
+
+
+
+//Sending Request to follow a user
+exports.sendFollowRequest = catchAyncErrors(async(req,res,next)=>{
+    const reciever = await User.findById(req.params.id);
+
+
+    const alreadyFollowing = reciever.followers.find(person=>person.id === req.user._id.toString());
+    if(alreadyFollowing)
+    {
+        return next(new ErrorHandler("Already Following "))
+    }
+
+    
+    const alreadyRequested = reciever.notifications.find(person=>person.id === req.user._id.toString());
+    if(alreadyRequested){
+        return next(new ErrorHandler("Already requested to follow"))
+    }
+
+    reciever.notifications.push({id : req.user._id,
+                                name : req.user.name,
+                                avatar : req.user.avatar});
+
+    req.user.following.push({id : req.user._id,
+                                name : req.user.name,
+                                avatar : req.user.avatar});
+                                
+
+    reciever.save();
+    user.save();
+
+    res.status(200).json({
+        success :  true
+    })
+   
+})
+
+
+
+
+
+//Accept follow request
+
+
+
+//Deny Follow request
+
+
+
+
 
 
 

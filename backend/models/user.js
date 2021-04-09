@@ -58,16 +58,43 @@ const userSchema = new mongoose.Schema({
         type : Date
     },
 
-    following : [ {
-        type: mongoose.Schema.ObjectId,
-        ref: this,
-        required: true
-   }],
-   followers : [ {
-    type: mongoose.Schema.ObjectId,
-    ref: this,
-    required: true
-}]
+    following :[{
+        id : {type: String},
+        name : {type:String},
+        avatar: {
+            public_id:{
+                type : String,
+            },
+            url:{
+                type : String,
+            }
+        }
+    }],
+   followers : [{
+    id : {type: String},
+    name : {type:String},
+    avatar: {
+        public_id:{
+            type : String,
+        },
+        url:{
+            type : String,
+        }
+    }
+}],
+
+    notifications:[{
+        id : {type: String},
+        name : {type:String},
+        avatar: {
+            public_id:{
+                type : String,
+            },
+            url:{
+                type : String,
+            }
+        }
+    }]
 
 })
 

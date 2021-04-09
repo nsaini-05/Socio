@@ -160,7 +160,7 @@ res.status(200).json({
 //Get someone profile(limited details name , and photo only)
 exports.getUserProfile = catchAyncErrors(async(req,res,next)=>{
     
-    const requestedUserDetails = await User.findById(req.params.id ,  );
+    const requestedUserDetails = await User.findById(req.params.id);
     
     if(!requestedUserDetails){
         next(new ErrorHandler("Invalid URL" , 404));
@@ -209,33 +209,26 @@ exports.getAllNotifications = catchAyncErrors(async(req,res,next)=>{
 exports.sendFollowRequest = catchAyncErrors(async(req,res,next)=>{
     const reciever = await User.findById(req.params.id);
 
-
-    const alreadyFollowing = reciever.followers.find(person=>person.id === req.user._id.toString());
+    const alreadyFollowing = reciever.followers.includes(req.user._id);
     if(alreadyFollowing)
     {
         return next(new ErrorHandler("Already Following "))
     }
 
     
-    const alreadyRequested = reciever.notifications.find(person=>person.id === req.user._id.toString());
+    const alreadyRequested = reciever.notifications.includes(req.user._id);
     if(alreadyRequested){
         return next(new ErrorHandler("Already requested to follow"))
-    }
+    }   
 
-    reciever.notifications.push({id : req.user._id,
-                                name : req.user.name,
-                                avatar : req.user.avatar});
-
-    req.user.following.push({id : req.user._id,
-                                name : req.user.name,
-                                avatar : req.user.avatar});
-                                
-
+    //reciever.notifications = [req.user._id]
+    reciever.notifications.push(req.user._id)
+    req.user.following.push(reciever._id)
     reciever.save();
-    user.save();
+    req.user.save();
 
     res.status(200).json({
-        success :  true
+        success :  true,
     })
    
 })

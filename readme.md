@@ -18,3 +18,11 @@
 
 
 
+### POST 
+
+- [ ] POST Model
+- [ ] Create 
+- [ ] Edit 
+- [ ] Delete
+- [ ] Get all posts
+- [ ] Get my posts

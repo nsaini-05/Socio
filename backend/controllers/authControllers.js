@@ -4,6 +4,7 @@ const catchAyncErrors = require('../middlewares/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const sendEmail  = require('../utils/sendEmail');
 const crypto = require('crypto');
+const { send } = require('process');
 
 //Register User => /api/v1/resgister
 exports.registerUser = catchAyncErrors(async(req,res,next) =>{
@@ -178,25 +179,48 @@ exports.getUserProfile = catchAyncErrors(async(req,res,next)=>{
 
 //Fetch Followers list
 exports.getFollowersList = catchAyncErrors(async(req,res,next)=>{
-    res.status(200).json({
-        success : true,
-        followers : req.user.followers
-    })
+    
+    const followerData = await Promise.all(req.user.followers.map(async(profile_id)=>{
+        const user =  await User.findById(profile_id).select('name avatar'); 
+        return user;
+     }))
+    
+     res.status(200).json({
+            success : true,
+            following : followerData
+        });    
 })
 
 
 //Fetch Following list
 exports.getFollowingList = catchAyncErrors(async(req,res,next)=>{
-    res.status(200).json({
+
+const followingData = await Promise.all(req.user.following.map(async(profile_id)=>{
+    const user =  await User.findById(profile_id).select('name avatar'); 
+    return user;
+ }))
+
+ res.status(200).json({
         success : true,
-        following : req.user.following
+        following : followingData
     })
+
+
 })
 
 
 
 //Get Notifications
 exports.getAllNotifications = catchAyncErrors(async(req,res,next)=>{
+
+    
+const notificationsData = await Promise.all(req.user.notifications.map(async(profile_id)=>{
+    const user =  await User.findById(profile_id).select('name avatar'); 
+    return user;
+ }))
+
+
+
     res.status(200).json({
         success : true,
         notifications : req.user.notifications
@@ -212,18 +236,23 @@ exports.sendFollowRequest = catchAyncErrors(async(req,res,next)=>{
     const alreadyFollowing = reciever.followers.includes(req.user._id);
     if(alreadyFollowing)
     {
-        return next(new ErrorHandler("Already Following "))
+        return next(new ErrorHandler("Already Following ",404))
     }
 
     
     const alreadyRequested = reciever.notifications.includes(req.user._id);
     if(alreadyRequested){
-        return next(new ErrorHandler("Already requested to follow"))
+        return next(new ErrorHandler("Already requested to follow",404))
     }   
+
+
+    if(req.params.id == req.user._id)
+    {
+        return next(new ErrorHandler("Invalid Request",404))
+    }
 
     //reciever.notifications = [req.user._id]
     reciever.notifications.push(req.user._id)
-    req.user.following.push(reciever._id)
     reciever.save();
     req.user.save();
 
@@ -238,12 +267,39 @@ exports.sendFollowRequest = catchAyncErrors(async(req,res,next)=>{
 
 
 //Accept follow request
+exports.acceptFollowRequest = catchAyncErrors(async(req,res,next)=>{
+    const sender_id = req.params.id;
+    if(! req.user.notifications.includes(req.params.id)){
+        return next(new ErrorHandler("Invalid Request",404))
+    }
 
-
+    const sender = await User.findById(req.params.id).select('following');
+    sender.following.push(req.user._id);
+    sender.save();
+    
+    req.user.followers.push(sender_id);
+    req.user.notifications = req.user.notifications.filter(id => id != req.params.id);
+    
+    req.user.save();
+    res.status(200).json({
+        success: true
+    })
+})
 
 //Deny Follow request
+exports.denyFollowRequest = catchAyncErrors(async(req,res,next)=>{
+    const sender_id = req.params.id   
 
+    if(! req.user.notifications.includes(req.params.id)){
+        return next(new ErrorHandler("Invalid Request",404))
+    }
 
+    req.user.notifications = req.user.notifications.filter(id => id != req.params.id); 
+    req.user.save();
+    res.status(200).json({
+        success: true
+    })
+})
 
 
 

@@ -2,7 +2,7 @@ const express = require ('express');
 const router = express.Router();
 const {registerUser,
      loginUser,
-      logout,
+    logout,
     forgotPassword,
     resetPassword,
     getMyProfile,
@@ -12,7 +12,10 @@ const {registerUser,
     sendFollowRequest,
     getFollowersList,
     getFollowingList,
-    getAllNotifications
+    getAllNotifications,
+    acceptFollowRequest,
+    denyFollowRequest
+    
     } = require('../controllers/authControllers');
 
 const {isAuthenticatedUser , authorizeRoles } = require('../middlewares/auth');
@@ -33,7 +36,11 @@ router.route('/follow/:id').get(isAuthenticatedUser , sendFollowRequest);
 
 router.route('/followers').get(isAuthenticatedUser , getFollowersList);
 router.route('/following').get(isAuthenticatedUser , getFollowingList);
+
 router.route('/notifications').get(isAuthenticatedUser , getAllNotifications)
+router.route('/notifications/accept/:id').get(isAuthenticatedUser , acceptFollowRequest)
+router.route('/notifications/deny/:id').get(isAuthenticatedUser , denyFollowRequest)
+
 module.exports = router;
 
 

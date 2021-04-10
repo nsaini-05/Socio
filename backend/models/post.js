@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-
+const User = require('../models/user');
 
 const postSchema = new mongoose.Schema({
     title :{
@@ -13,6 +13,11 @@ const postSchema = new mongoose.Schema({
         type : String,
         required : [true , ""],
         maxLength : [200 , "Post cannot exceed 200 characters"]
+    },
+    user:{
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: true
     },
     createdAt :{
         type : Date,

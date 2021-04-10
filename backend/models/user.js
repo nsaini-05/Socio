@@ -1,9 +1,8 @@
-const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-
+const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -63,20 +62,17 @@ const userSchema = new mongoose.Schema({
        }],
     followers: [{
         type: mongoose.ObjectId,
-        default : []
-
-                
+        default : []               
     }
-
     ],
 
     notifications: [
-        {
-            type: mongoose.ObjectId,
-            default : []
+        
+        {   type: mongoose.ObjectId,
+            ref : this,
+            default : []            
+        }  
 
-            
-        }
     ]
 });
 

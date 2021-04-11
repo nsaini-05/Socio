@@ -14,14 +14,13 @@ const {registerUser,
     getFollowingList,
     getAllNotifications,
     acceptFollowRequest,
-    denyFollowRequest
-    
+    denyFollowRequest    
     } = require('../controllers/authControllers');
 
 const {isAuthenticatedUser , authorizeRoles } = require('../middlewares/auth');
 router.route('/register').post(registerUser);
 router.route('/login').post(loginUser);
-router.route('/logout').get(isAuthenticatedUser,authorizeRoles('user'), logout);
+router.route('/logout').get(isAuthenticatedUser, logout);
 //router.route('/sample').get(isAuthenticatedUser,sample);
 
 router.route('/forgotpassword').post(forgotPassword);
@@ -40,6 +39,13 @@ router.route('/following').get(isAuthenticatedUser , getFollowingList);
 router.route('/notifications').get(isAuthenticatedUser , getAllNotifications)
 router.route('/notifications/accept/:id').get(isAuthenticatedUser , acceptFollowRequest)
 router.route('/notifications/deny/:id').get(isAuthenticatedUser , denyFollowRequest)
+
+
+//User admin realted routes
+
+
+
+
 
 module.exports = router;
 

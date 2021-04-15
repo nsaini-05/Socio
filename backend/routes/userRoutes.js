@@ -14,7 +14,9 @@ const {registerUser,
     getFollowingList,
     getAllNotifications,
     acceptFollowRequest,
-    denyFollowRequest    
+    denyFollowRequest,
+    searchUsers,
+    getFollowingPosts    
     } = require('../controllers/authControllers');
 
 const {isAuthenticatedUser , authorizeRoles } = require('../middlewares/auth');
@@ -42,7 +44,8 @@ router.route('/notifications/deny/:id').get(isAuthenticatedUser , denyFollowRequ
 
 
 //User admin realted routes
-
+router.route('/search').get(isAuthenticatedUser , searchUsers)
+router.route('/posts').get(isAuthenticatedUser,getFollowingPosts)
 
 
 

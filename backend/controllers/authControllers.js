@@ -1,10 +1,16 @@
 const User = require('../models/user');
+const Post = require('../models/post')
 const ErrorHandler = require('../utils/errorHandler')
 const catchAyncErrors = require('../middlewares/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const sendEmail  = require('../utils/sendEmail');
 const crypto = require('crypto');
 const { send } = require('process');
+
+
+const APIFeatures  = require('../utils/apiFeatures');
+const { post } = require('../routes/userRoutes');
+
 
 //Register User => /api/v1/resgister
 exports.registerUser = catchAyncErrors(async(req,res,next) =>{
@@ -180,29 +186,34 @@ exports.getUserProfile = catchAyncErrors(async(req,res,next)=>{
 //Fetch Followers list
 exports.getFollowersList = catchAyncErrors(async(req,res,next)=>{
     
-    const followerData = await Promise.all(req.user.followers.map(async(profile_id)=>{
+    if(user.followers){    
+    var followerData = await Promise.all(req.user.followers.map(async(profile_id)=>{
         const user =  await User.findById(profile_id).select('name avatar'); 
         return user;
      }))
-    
+    }    
      res.status(200).json({
             success : true,
-            following : followerData
+            following : followerData,
+            count  : req.user.followers.length
         });    
 })
 
 
 //Fetch Following list
 exports.getFollowingList = catchAyncErrors(async(req,res,next)=>{
+    if(user.following){    
 
-const followingData = await Promise.all(req.user.following.map(async(profile_id)=>{
+var followingData = await Promise.all(req.user.following.map(async(profile_id)=>{
     const user =  await User.findById(profile_id).select('name avatar'); 
     return user;
  }))
+}
 
  res.status(200).json({
         success : true,
-        following : followingData
+        following : followingData,
+        count :  req.user.following.length
     })
 
 
@@ -299,6 +310,53 @@ exports.denyFollowRequest = catchAyncErrors(async(req,res,next)=>{
     res.status(200).json({
         success: true
     })
+})
+
+
+//Search Opertations
+
+exports.searchUsers  = catchAyncErrors(async(req,res,next)=>{
+    const apiFeatures = new APIFeatures(User.find() , req.query).search().pagination(4);
+
+    const users  = await apiFeatures.query
+
+    res.status(200).json({
+        success : true,
+        count : users.length,
+        users
+    })
+})
+
+
+
+//Fetching the following posts
+exports.getFollowingPosts = catchAyncErrors(async(req,res,next)=>{
+    const followingIds = req.user.following;
+
+
+    var posts = await Promise.all(followingIds.map(async (id)=>{
+        const post = await Post.findOne({user : id});
+        return post
+   
+    }))
+    
+   /*
+    for(var i = 0 ; i < followingIds.length ; i++){
+        const post = await post.findById(id)
+        console.log(post);
+
+    }
+
+    */ 
+
+
+    res.status(200).json({
+        success : true,
+        posts
+       
+    })
+
+
 })
 
 

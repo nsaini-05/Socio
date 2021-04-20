@@ -336,7 +336,7 @@ exports.getFollowingPosts = catchAyncErrors(async(req,res,next)=>{
 
     var posts = await Promise.all(followingIds.map(async (id)=>{
         const post = await Post.findOne({user : id});
-        return post
+        return postnpm
    
     }))
     

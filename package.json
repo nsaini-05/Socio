@@ -11,9 +11,11 @@
   "author": "Neeraj Saini",
   "license": "ISC",
   "dependencies": {
+    "babel": "^6.23.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
+    "create-react-app": "^4.0.3",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -23,6 +25,7 @@
     "validator": "^13.5.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.13.15",
     "nodemon": "^2.0.7"
   }
 }

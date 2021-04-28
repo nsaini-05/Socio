@@ -1,9 +1,16 @@
 const User = require('../models/user');
+const Post = require('../models/post')
 const ErrorHandler = require('../utils/errorHandler')
 const catchAyncErrors = require('../middlewares/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const sendEmail  = require('../utils/sendEmail');
 const crypto = require('crypto');
+const { send } = require('process');
+
+
+const APIFeatures  = require('../utils/apiFeatures');
+const { post } = require('../routes/userRoutes');
+
 
 //Register User => /api/v1/resgister
 exports.registerUser = catchAyncErrors(async(req,res,next) =>{
@@ -160,7 +167,7 @@ res.status(200).json({
 //Get someone profile(limited details name , and photo only)
 exports.getUserProfile = catchAyncErrors(async(req,res,next)=>{
     
-    const requestedUserDetails = await User.findById(req.params.id ,  );
+    const requestedUserDetails = await User.findById(req.params.id);
     
     if(!requestedUserDetails){
         next(new ErrorHandler("Invalid URL" , 404));
@@ -178,25 +185,53 @@ exports.getUserProfile = catchAyncErrors(async(req,res,next)=>{
 
 //Fetch Followers list
 exports.getFollowersList = catchAyncErrors(async(req,res,next)=>{
-    res.status(200).json({
-        success : true,
-        followers : req.user.followers
-    })
+    
+    if(user.followers){    
+    var followerData = await Promise.all(req.user.followers.map(async(profile_id)=>{
+        const user =  await User.findById(profile_id).select('name avatar'); 
+        return user;
+     }))
+    }    
+     res.status(200).json({
+            success : true,
+            following : followerData,
+            count  : req.user.followers.length
+        });    
 })
 
 
 //Fetch Following list
 exports.getFollowingList = catchAyncErrors(async(req,res,next)=>{
-    res.status(200).json({
+    if(user.following){    
+
+var followingData = await Promise.all(req.user.following.map(async(profile_id)=>{
+    const user =  await User.findById(profile_id).select('name avatar'); 
+    return user;
+ }))
+}
+
+ res.status(200).json({
         success : true,
-        following : req.user.following
+        following : followingData,
+        count :  req.user.following.length
     })
+
+
 })
 
 
 
 //Get Notifications
 exports.getAllNotifications = catchAyncErrors(async(req,res,next)=>{
+
+    
+const notificationsData = await Promise.all(req.user.notifications.map(async(profile_id)=>{
+    const user =  await User.findById(profile_id).select('name avatar'); 
+    return user;
+ }))
+
+
+
     res.status(200).json({
         success : true,
         notifications : req.user.notifications
@@ -209,33 +244,31 @@ exports.getAllNotifications = catchAyncErrors(async(req,res,next)=>{
 exports.sendFollowRequest = catchAyncErrors(async(req,res,next)=>{
     const reciever = await User.findById(req.params.id);
 
-
-    const alreadyFollowing = reciever.followers.find(person=>person.id === req.user._id.toString());
+    const alreadyFollowing = reciever.followers.includes(req.user._id);
     if(alreadyFollowing)
     {
-        return next(new ErrorHandler("Already Following "))
+        return next(new ErrorHandler("Already Following ",404))
     }
 
     
-    const alreadyRequested = reciever.notifications.find(person=>person.id === req.user._id.toString());
+    const alreadyRequested = reciever.notifications.includes(req.user._id);
     if(alreadyRequested){
-        return next(new ErrorHandler("Already requested to follow"))
+        return next(new ErrorHandler("Already requested to follow",404))
+    }   
+
+
+    if(req.params.id == req.user._id)
+    {
+        return next(new ErrorHandler("Invalid Request",404))
     }
 
-    reciever.notifications.push({id : req.user._id,
-                                name : req.user.name,
-                                avatar : req.user.avatar});
-
-    req.user.following.push({id : req.user._id,
-                                name : req.user.name,
-                                avatar : req.user.avatar});
-                                
-
+    //reciever.notifications = [req.user._id]
+    reciever.notifications.push(req.user._id)
     reciever.save();
-    user.save();
+    req.user.save();
 
     res.status(200).json({
-        success :  true
+        success :  true,
     })
    
 })
@@ -245,12 +278,86 @@ exports.sendFollowRequest = catchAyncErrors(async(req,res,next)=>{
 
 
 //Accept follow request
+exports.acceptFollowRequest = catchAyncErrors(async(req,res,next)=>{
+    const sender_id = req.params.id;
+    if(! req.user.notifications.includes(req.params.id)){
+        return next(new ErrorHandler("Invalid Request",404))
+    }
 
-
+    const sender = await User.findById(req.params.id).select('following');
+    sender.following.push(req.user._id);
+    sender.save();
+    
+    req.user.followers.push(sender_id);
+    req.user.notifications = req.user.notifications.filter(id => id != req.params.id);
+    
+    req.user.save();
+    res.status(200).json({
+        success: true
+    })
+})
 
 //Deny Follow request
+exports.denyFollowRequest = catchAyncErrors(async(req,res,next)=>{
+    const sender_id = req.params.id   
+
+    if(! req.user.notifications.includes(req.params.id)){
+        return next(new ErrorHandler("Invalid Request",404))
+    }
+
+    req.user.notifications = req.user.notifications.filter(id => id != req.params.id); 
+    req.user.save();
+    res.status(200).json({
+        success: true
+    })
+})
 
 
+//Search Opertations
+
+exports.searchUsers  = catchAyncErrors(async(req,res,next)=>{
+    const apiFeatures = new APIFeatures(User.find() , req.query).search().pagination(4);
+
+    const users  = await apiFeatures.query
+
+    res.status(200).json({
+        success : true,
+        count : users.length,
+        users
+    })
+})
+
+
+
+//Fetching the following posts
+exports.getFollowingPosts = catchAyncErrors(async(req,res,next)=>{
+    const followingIds = req.user.following;
+
+
+    var posts = await Promise.all(followingIds.map(async (id)=>{
+        const post = await Post.findOne({user : id});
+        return postnpm
+   
+    }))
+    
+   /*
+    for(var i = 0 ; i < followingIds.length ; i++){
+        const post = await post.findById(id)
+        console.log(post);
+
+    }
+
+    */ 
+
+
+    res.status(200).json({
+        success : true,
+        posts
+       
+    })
+
+
+})
 
 
 

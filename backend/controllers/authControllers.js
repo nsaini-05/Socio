@@ -5,7 +5,7 @@ const catchAyncErrors = require('../middlewares/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const sendEmail  = require('../utils/sendEmail');
 const crypto = require('crypto');
-const { send } = require('process');
+const jwt = require('jsonwebtoken');
 
 
 const APIFeatures  = require('../utils/apiFeatures');
@@ -15,16 +15,20 @@ const { post } = require('../routes/userRoutes');
 //Register User => /api/v1/resgister
 exports.registerUser = catchAyncErrors(async(req,res,next) =>{
     const user  = await User.create(req.body);
-   sendToken(user , 200 ,res)
+    sendToken(user , 200 ,res)
 })
 
 
 //User login  => /api/v1/login
 exports.loginUser = catchAyncErrors(async(req,res,next)=>{
-    /*
-    const {token} = req.cookies;
+    
+    /*const {token} = req.cookies;
+    
     if(token){
-        return next(new ErrorHandler('User already signed in'));
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+        sendToken(user , 200 ,res);
+
     }
     */
 
@@ -33,7 +37,7 @@ exports.loginUser = catchAyncErrors(async(req,res,next)=>{
     if(!email || !password){
         return next(new ErrorHandler("Please enter email and password",404))
     }
-    const user = await User.findOne({email : email}).select('+password');
+    var  user = await User.findOne({email : email}).select('+password');
 
     if(!user){
         return next(new ErrorHandler("Invalid Email or Password" , 404));
@@ -43,6 +47,10 @@ exports.loginUser = catchAyncErrors(async(req,res,next)=>{
     if(!isPasswordMatched){
         return next(new ErrorHandler("Invalid Email or Password" , 401));
     }
+
+     user = await User.findOne({email : email})
+
+
     sendToken(user , 200 ,res)
 })
 

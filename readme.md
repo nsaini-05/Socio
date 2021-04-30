@@ -11,16 +11,16 @@
 
 
 - [x] Send Follow Request
-- [ ] Get notifications
-- [ ] Accept Request
-- [ ] Reject Request
+- [x] Get notifications
+- [x] Accept Request
+- [x] Reject Request
 
 
 
 
 ### POST 
 
-- [ ] POST Model
+- [x] POST Model
 - [ ] Create 
 - [ ] Edit 
 - [ ] Delete

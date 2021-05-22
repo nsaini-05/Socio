@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 
 export const login = (email, password) => async (dispatch) => {
+
   try {
     dispatch({ type: LOGIN_REQUEST });
     const config = {
@@ -40,4 +41,5 @@ export const loadUser = () => async (dispatch) => {
 
 export const clearErrors = () => async (dispatch) => {
   dispatch({ type: CLEAR_ERRORS });
+
 };

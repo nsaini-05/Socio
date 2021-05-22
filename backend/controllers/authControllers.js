@@ -344,20 +344,11 @@ exports.getFollowingPosts = catchAyncErrors(async(req,res,next)=>{
 
     var posts = await Promise.all(followingIds.map(async (id)=>{
         const post = await Post.findOne({user : id});
-        return postnpm
+        if(post!==null){
+        return post
+        }
    
     }))
-    
-   /*
-    for(var i = 0 ; i < followingIds.length ; i++){
-        const post = await post.findById(id)
-        console.log(post);
-
-    }
-
-    */ 
-
-
     res.status(200).json({
         success : true,
         posts

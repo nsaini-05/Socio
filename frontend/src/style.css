@@ -1,91 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
-
-* {
-  padding: 0;
+*{
   margin: 0;
+  padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-}
+}   
 
-body {
-  background-color: #f0f2f5;
-}
-
-.parent_div {
-    height: 100vh; /* Magic here */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.parent_div .login-form {
-  width: 350px;
-  height: 50vh;
-}
-
-.login-form h1 {
-  font-size: 35px;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.login-form p {
-  font-size: 20px;
-  margin: 15px 0;
-}
-
-.login-form input {
-  font-size: 16px;
-  width: 100%;
-  padding: 15px 10px;
-  border: 0;
-  outline: none;
-  border-radius: 5px;
-}
-
-.login-form button {
-  font-size: 18px;
-  font-size: bold;
-  margin: 20px 0;
-  padding: 10px 15px;
-  width: 100%;
-  border-radius: 5px;
-  border: 0px;
-  cursor: pointer;
-  background: #166fe5;
-  color: white;
-}
-
-.loader {
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 16px solid #3498db;
-  width: 120px;
-  height: 120px;
-  position: absolute;
-  left: 50%;
-  top: 40%;
-  transform: translate(-50%, -50%);
-  -webkit-animation: spin 2s linear infinite; /* Safari */
-  animation: spin 2s linear infinite;
- 
-}
-
-/* Safari */
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+body{
+  background: #F0F2F5;
+  min-height : 100vh;
+  height : 100vh;
 }

@@ -46,7 +46,8 @@ const LoginStyle = styled.div`
     border-radius: 5px;
     background-color: #ffffff;
     font-weight: 300;
-  }
+    margin : 10px 0;
+      }
 
   .login {
     width: 100%;
@@ -81,7 +82,7 @@ const LoginStyle = styled.div`
   }
 `;
 
-const Nav = ({ history }) => {
+const Login = ({ history }) => {
   const dispatch = useDispatch();
   const alert = useAlert();
   const [email, setEmail] = useState("");
@@ -121,7 +122,6 @@ const Nav = ({ history }) => {
     <LoginStyle>
       <div className="parent-div">
         <form>
-          <p>Email</p>
           <input
             type="email"
             name="email"
@@ -131,7 +131,6 @@ const Nav = ({ history }) => {
             }}
             required
           />
-          <p>Password</p>
           <input
             type="password"
             name="password"
@@ -159,4 +158,4 @@ const Nav = ({ history }) => {
   );
 };
 
-export default Nav;
+export default Login;

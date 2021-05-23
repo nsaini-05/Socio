@@ -4,6 +4,10 @@ import './style.css'
 import {loadUser} from "./Actions/userActions"
 import { useDispatch, useSelector } from "react-redux";
 
+
+
+import ProtectedRoute from './components/Routes/ProtectedRoute'
+
 import store from './store'
 import Loader from './components/Layout/Loader'
 
@@ -19,7 +23,7 @@ function App() {
     <Router>
     <Fragment>
 <Route path = "/" component = {Nav} exact />
-<Route path = "/home" component = {Loader} exact />
+<ProtectedRoute path = "/home" component = {Home} exact />
 
     </Fragment>
     </Router>

@@ -4,6 +4,8 @@ import {LOGIN_REQUEST ,
      LOAD_USER_REQUEST,
      LOAD_USER_SUCCESS,
      LOAD_USER_FAIL,
+     LOGOUT_FAIL,
+     LOGOUT_SUCCESS,
      CLEAR_ERRORS
     } from "../constants/UserConstants";
 
@@ -36,6 +38,27 @@ export const authReducers = function(state = {user:{}},action){
                 user : null,
                 error : action.payload
             }
+
+
+        case LOGOUT_SUCCESS:
+            return{
+                loading : false,
+                isAuthenticated : false,
+                user : null
+            }
+
+            case LOGOUT_FAIL:
+                return{
+                    ...state,
+                    error : action.payload
+
+                }
+
+
+
+
+
+
         case CLEAR_ERRORS:
             return {
                   ...state,
